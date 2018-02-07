@@ -38,14 +38,10 @@ DEFAULT_POST_HEADERS = {
     'Accept-Language': LANG,
     'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:53.0) Gecko/20100101 Firefox/53.0'
 }
-# 此处填写APIKEY
-# 胡报
-ACCESS_KEY = "c010cc2c-363bafb8-9697958b-65a9a"
-SECRET_KEY = "c4375255-43038a38-84d3c8aa-c5f54"
 
-# 王雨飞
-# ACCESS_KEY = "a682045c-b4e5d681-d81dadd2-e060c"
-# SECRET_KEY = "197fdc89-e413da8c-0603754d-0b59f"
+# 此处填写APIKEY
+ACCESS_KEY = 
+SECRET_KEY = 
 
 # 首次运行可通过get_accounts()获取acct_id,然后直接赋值,减少重复获取。
 ACCOUNT_ID = None

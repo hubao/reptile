@@ -19,10 +19,8 @@ from urllib import parse
 from urllib import request
 
 # 此处填写APIKEY
-
-ACCESS_KEY = "c010cc2c-363bafb8-9697958b-65a9a"
-SECRET_KEY = "c4375255-43038a38-84d3c8aa-c5f54"
-
+ACCESS_KEY = 
+SECRET_KEY = 
 
 # API 请求地址
 MARKET_URL = "https://api.huobi.pro"
