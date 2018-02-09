@@ -16,8 +16,8 @@ import requests
 import urllib2
 import urlparse
 
-# timeout in 5 seconds:
-TIMEOUT = 5
+# timeout in 20 seconds:
+TIMEOUT = 20
 
 API_HOST = "api.huobi.pro"
 
@@ -42,6 +42,9 @@ DEFAULT_POST_HEADERS = {
 # 此处填写APIKEY
 ACCESS_KEY = 
 SECRET_KEY = 
+
+ACCESS_KEY =
+SECRET_KEY =
 
 # 首次运行可通过get_accounts()获取acct_id,然后直接赋值,减少重复获取。
 ACCOUNT_ID = None

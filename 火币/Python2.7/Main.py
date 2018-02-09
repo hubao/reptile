@@ -6,10 +6,10 @@
 # @github  : https://github.com/KlausQIU
 
 from Utils import *
-from Custorm import *
 
 from HuobiService import*
 import time
+import sys
 
 def _time():
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -76,30 +76,34 @@ def _buy():
 #######################################################################################
 # 检查账户可售数量
 def _can_sell(content):
-    ret = content.split(": [")
-    items = ret[1].split("}, {")
+    try:
+        ret = content.split(": [")
+        items = ret[1].split("}, {")
 
+        for item in items:
+            if m_base_currency in item and "frozen" not in item:
+                s = item.split("', u'")
+                
+                for k in s:                
+                    if "balance" in k:
+                        rmb = k.split("': u'")[1][0:20]
+                        rmb = int(float(rmb))
 
-    for item in items:
-        if m_base_currency in item and "frozen" not in item:
-            s = item.split("', u'")
-            
-            for k in s:                
-                if "balance" in k:
-                    rmb = k.split("': u'")[1][0:20]
-                    
-                    print("###### %s 检查账户参数： 数量[%s]" % 
-                        (_time(), rmb))
-                    if float(rmb) > 0:
-                        return int(float(rmb)) 
-                    else:
-                        return 0
+                        if rmb > 0:
+                            return int(rmb)
+                        else:
+                            return 0
 
-    return -1
+    except Exception as e:
+        print(" ###### 异常：%s" % str(e))
+        return -1
+
 
 # 卖
 def _sell_combine():
     try:
+        symble = m_base_currency + m_quote_urrency
+
         _sell_count = 0
         
         if(m_sell_count > 0):
@@ -108,8 +112,6 @@ def _sell_combine():
             _sell_count = _can_sell(str(get_balance()))
 
         if ( 0 < _sell_count):
-            symble = m_base_currency + m_quote_urrency
-            
             print("###### %s 卖出： 交易[%s] 数量[%s] 价格[%s]" % 
                 (_time(), symble, str(_sell_count), m_sell_price))
 
@@ -124,6 +126,10 @@ def _sell_combine():
                 print("###### %s 卖出 [%s:%s] 失败 %s" % 
                     (_time(), _sell_count,m_sell_price,ret_info))
                 return -1
+        else:
+            print("###### %s 卖出失败（数量不足）： 交易[%s] 数量[%s] 价格[%s]" % 
+                (_time(), symble, str(_sell_count), m_sell_price))
+            return -1
 
     except Exception as e:
         print(" ###### 异常：%s" % str(e))
@@ -155,18 +161,25 @@ def parse_balance(content):
 # send_order(amount, source, symbol, _type, price=0):
 
 # 买入/卖出价
-m_buy_price = 0.00008344
-m_sell_price = 0.00008353
+m_buy_price = 0.000115
+m_sell_price = 0.0004
 
 # 计价货币/基础货币
 m_quote_urrency = 'eth'
-m_base_currency = 'tnb'
+m_base_currency = 'wpr'
 
 # 买入/卖出量
-m_buy_count = 1
-m_sell_count = 10
+m_buy_count = 8000
+m_sell_count = 0
 
 if __name__ == '__main__':
+    # stdout_backup = sys.stdout
+
+    # #log_file = open("hubao.log", "w")
+    # log_file = open("wangyf.log", "w")
+
+    # sys.stdout = log_file
+
     parse_balance(str(get_balance()))
     #print(get_detail('tnbeth'))
     #print order_info(1980353438)
@@ -178,7 +191,10 @@ if __name__ == '__main__':
     #print(get_currencys())
     #print(get_symbols())
 
-    # if(0 == _buy()):
-    #     while 1:
-    #         _sell_combine();
+    #if(0 == _buy()):
+    while 1:
+        _sell_combine();
+
+    # log_file.close()
+
         

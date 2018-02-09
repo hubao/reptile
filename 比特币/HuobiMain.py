@@ -13,7 +13,6 @@ import operator
 import sys
 import time
 
-
 def _time():
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
@@ -119,24 +118,28 @@ def _sell_combine():
         if ( 0 != _is_transaction_valid(str(get_symbols()))):
             return -1
 
-        can_sell_count = _can_sell(str(get_balance()))
-        can_sell_count = str(1.00)
-        if ( 0 < can_sell_count):
-            print("###### %s 卖出： 交易[%s] 数量[%s] 价格[%s]" % 
-                (_time(), symble, str(can_sell_count), m_sell_price))
+        _sell_count = 0
+        
+        if(m_sell_count > 0):
+            _sell_count = m_sell_count
+        else:
+            _sell_count = _can_sell(str(get_balance()))
 
-            count = can_sell_count
-            ret_info = commit_order(count, 'api', symble, 'sell-limit', m_sell_price)
+        if ( 0 < _sell_count):
+            print("###### %s 卖出： 交易[%s] 数量[%s] 价格[%s]" % 
+                (_time(), symble, str(_sell_count), m_sell_price))
+
+            ret_info = commit_order(_sell_count, 'api', symble, 'sell-limit', m_sell_price)
             ret = ret_info['status']
             print ret_info
 
             if ( "ok" == ret):
                 print("###### %s 卖出 [%s:%s] 成功 %s" % 
-                    (_time(), count,str(m_sell_price),ret_info))
+                    (_time(), _sell_count,str(m_sell_price),ret_info))
                 return 0
             else:
                 print("###### %s 卖出 [%s:%s] 失败 %s" % 
-                    (_time(), count,str(m_sell_price),ret_info))
+                    (_time(), _sell_count,str(m_sell_price),ret_info))
                 return -1
 
     except Exception as e:
@@ -144,16 +147,21 @@ def _sell_combine():
         return -1
 
 # 买入/卖出价
-m_buy_price = 0.00000922
-m_sell_price = 0.00008353
+m_buy_price = 0.000115
+m_sell_price = 0.0004
 
 # 计价货币/基础货币
-m_base_currency = 'tnb' #'lsk'
 m_quote_urrency = 'eth'
+m_base_currency = 'wpr'
 
 # 买入/卖出量
-m_buy_count = 1
-m_sell_count = 10
+m_buy_count = 8000
+m_sell_count = 0
+
+stdout_backup = sys.stdout
+log_file = open("message.log", "w")
+sys.stdout = log_file
+log_file.close()
 
 if __name__ == '__main__':
     _sell_combine()
@@ -164,87 +172,4 @@ if __name__ == '__main__':
     # if len(sys.argv) < 6:
     #     print("参数不全")
     #     exit(0)
-
-    # if len(sys.argv) >= 6:
-
-    #     m_base_currency = str(sys.argv[1])
-    #     m_title = str(sys.argv[2])
-    #     m_buy_price = float(sys.argv[3])
-    #     m_sell_price = float(sys.argv[4])
-    #     m_buy_count = int(sys.argv[5])
-
-    # if len(sys.argv) > 6:
-    #     m_query = str(sys.argv[6])
-
-    # print("-- 交易参数： 币种[%s] 币名[%s] 买入价[%s] 卖出价[%s] 买入量[%s] 账户余额显示[%s]\n" % (m_base_currency, m_title, m_buy_price, m_sell_price, m_buy_count,m_query))
-    
-    # if ( "1" == m_query):
-    #     # print("###### 获取账户")
-    #     # print(get_accounts())
-    #     parse_balance(str(get_balance()))
-    #     exit(0)
-    # else:
-    #     while 1:
-    #         ret = _buy_combine();
-    #         if( 0 == ret):
-    #             while 1:
-    #                 if( 0 != _sell_combine()):
-    #                     time.sleep(1)
-    #         elif( -2 == ret):
-    #             continue
-    #         else:
-    #             exit(0)
-
-    # #_can_sell(str(get_balance()))
-    # exit(0)
-
-
-
-
-
-
-    # --------------------------------------------------------------------
-    # print("###### %s 获取1分钟线")
-    # print(get_kline('btccny', '1min'))
-    # print("###### %s 获取合并深度为1的盘口")
-    # print(get_depth('btccny', 'step1'))
-    # print("###### %s 获取Trade Detail")
-    # print(get_trade('btccny'))
-    # print("###### %s 获取 Market Detail 24小时成交量数据")
-    # print(get_detail('btccny'))
-    # print("###### %s 获取支持交易对")
-    # print(get_symbols())
-    
-    # print("###### %s 获取账户")
-    # print(get_accounts())
-
-    #print("###### %s 获取当前账户资产")
-    #print(get_balance())
-
-    #print('############ 下单')
-    #print(orders(0.01, 'api', 'btccny', 'buy-limit', 1000))
-    #order = orders(1, 'api', m_symble, 'sell-limit', 0.0001)
-    #order_id = order['data']
-    #print(order)
-    
-    #print('############ 执行订单')
-    #print(place_order(order_id))
-
-    # print('############ 撤销订单')
-    # print(cancel_order(order_id))
-    # print('############ 查询某个订单')
-    # print(order_info(order_id))
-    # print('############ 查询某个订单的成交明细')
-    # print(order_matchresults(order_id))
-    # print('############ 查询当前委托、历史委托')
-    # print(orders_list(m_symble, 'submitted'))
-    # print('############ 查询当前成交、历史成交')
-    # print(orders_matchresults('btccny'))
-    # print('############ 查询虚拟币提币地址')
-    # print(get_withdraw_address('btc'))
-    # print('############ 新提币接口')
-    # print(withdraw_new_create('', 0.01, 'btc', 0.0015))
-    # print(get_content())
-
-
 
