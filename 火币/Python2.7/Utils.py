@@ -16,6 +16,8 @@ import requests
 import urllib2
 import urlparse
 
+from Global import *
+
 # timeout in 20 seconds:
 TIMEOUT = 20
 
@@ -39,16 +41,13 @@ DEFAULT_POST_HEADERS = {
     'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:53.0) Gecko/20100101 Firefox/53.0'
 }
 
-# 此处填写APIKEY
-ACCESS_KEY = 
-SECRET_KEY = 
-
-ACCESS_KEY =
-SECRET_KEY =
-
 # 首次运行可通过get_accounts()获取acct_id,然后直接赋值,减少重复获取。
 ACCOUNT_ID = None
 
+_gol = gol()
+
+SECRET_KEY = _gol.get_secret_key()
+ACCESS_KEY = _gol.get_access_key()
 
 # API 请求地址
 MARKET_URL = TRADE_URL = "https://api.huobi.pro"

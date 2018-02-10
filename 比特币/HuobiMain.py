@@ -158,10 +158,6 @@ m_base_currency = 'wpr'
 m_buy_count = 8000
 m_sell_count = 0
 
-stdout_backup = sys.stdout
-log_file = open("message.log", "w")
-sys.stdout = log_file
-log_file.close()
 
 if __name__ == '__main__':
     _sell_combine()
