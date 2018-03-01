@@ -73,19 +73,21 @@ def _buy():
             if ( 0 == parse_content(str(get_symbols()))):
                 # 检查交易对存在，可以进行交易
                 while 1:
-                    m_buy_price = get_price(str(get_kline(symble,'1min',1)))
-                    if ( 0 >= m_buy_price):
-                        m_buy_price = _gol.buy_price()
+                    _buy_price = get_price(str(get_kline(symble,'1min',1)))
+                    if ( 0 < float(_buy_price)):
+                        m_buy_price[0] = _buy_price
+                    else:
+                        _buy_price = m_buy_price[0]
 
                     log.info("买入： 交易[%s] 数量[%s] 价格[%s]" % 
-                        (symble, m_buy_count, m_buy_price))
+                        (symble, m_buy_count, _buy_price))
 
-                    ret_info = send_order(m_buy_count, 'api', symble, 'buy-limit', m_buy_price)
+                    ret_info = send_order(m_buy_count, 'api', symble, 'buy-limit', _buy_price)
                     ret = ret_info['status']
 
                     if ( "ok" == ret):
                         log.info("买入 [%s:%s] 成功 %s" % 
-                            (m_buy_count,m_buy_price,ret_info))
+                            (m_buy_count,_buy_price,ret_info))
                         return 0
                     else:
                         log.debug("重试 %s 执行订单 " % (ret_info))
@@ -128,6 +130,7 @@ def _can_sell(content):
 def _sell_combine():
     try:
         symble = m_base_currency + m_quote_urrency
+        _buy_price = float(m_buy_price[0])
 
         _sell_count = 0
         
@@ -139,22 +142,22 @@ def _sell_combine():
         if ( 0 < _sell_count):
             # 卖价等于买入价乘以倍数
             log.info("卖出： 交易[%s] 数量[%s] 价格[%s]" % 
-                (symble, str(_sell_count), m_buy_price*_gol.rate()))
+                (symble, str(_sell_count), float(_buy_price * _gol.rate())))
 
-            ret_info = send_order(_sell_count, 'api', symble, 'sell-limit', m_buy_price*_gol.rate())
+            ret_info = send_order(_sell_count, 'api', symble, 'sell-limit', float(_buy_price * _gol.rate()))
             ret = ret_info['status']
             
             if ( "ok" == ret):
                 log.debug("卖出 [%s:%s] 成功 %s" % 
-                    (_sell_count,m_buy_price*_gol.rate(),ret_info))
+                    (_sell_count,float(_buy_price * _gol.rate()),ret_info))
                 return 0
             else:
                 log.error("卖出 [%s:%s] 失败 %s" % 
-                    (_sell_count,m_buy_price*_gol.rate(),ret_info))
+                    (_sell_count,float(_buy_price * _gol.rate()),ret_info))
                 return -1
         else:
             log.error("卖出失败（数量不足）： 交易[%s] 数量[%s] 价格[%s]" % 
-                (symble, str(_sell_count), m_buy_price*_gol.rate()))
+                (symble, str(_sell_count), float(_buy_price * _gol.rate())))
             return -1
 
     except Exception as e:
@@ -186,12 +189,15 @@ def parse_balance(content):
 # 卖出量 'api' 'iostbtc' 'sell-limit' 卖出价格
 # send_order(amount, source, symbol, _type, price=0):
 
+
 if __name__ == '__main__':
     _gol = gol()
-    
+
+    m_buy_price = [_gol.buy_price()]
+
     m_quote_urrency = _gol.quote_urrency()
     m_base_currency = _gol.base_currency()
-    
+
     m_buy_count = _gol.buy_count()
     m_sell_count = _gol.sell_count()
 
@@ -209,7 +215,7 @@ if __name__ == '__main__':
     #log.debug(get_currencys())
     #log.debug(get_symbols())
 
-    if(0 == _buy()):
+    if( 0 == _buy()):
         while 1:
             _sell_combine();    
     
