@@ -130,7 +130,6 @@ def _can_sell(content):
 def _sell_combine():
     try:
         symble = m_base_currency + m_quote_urrency
-        _buy_price = float(m_buy_price[0])
 
         _sell_count = 0
         
@@ -142,22 +141,22 @@ def _sell_combine():
         if ( 0 < _sell_count):
             # 卖价等于买入价乘以倍数
             log.info("卖出： 交易[%s] 数量[%s] 价格[%s]" % 
-                (symble, str(_sell_count), float(_buy_price * _gol.rate())))
+                (symble, str(_sell_count), float(m_buy_price[0]) * _gol.rate()))
 
-            ret_info = send_order(_sell_count, 'api', symble, 'sell-limit', float(_buy_price * _gol.rate()))
+            ret_info = send_order(_sell_count, 'api', symble, 'sell-limit', float(m_buy_price[0]) * _gol.rate())
             ret = ret_info['status']
             
             if ( "ok" == ret):
                 log.debug("卖出 [%s:%s] 成功 %s" % 
-                    (_sell_count,float(_buy_price * _gol.rate()),ret_info))
+                    (_sell_count,float(m_buy_price[0]) * _gol.rate()),ret_info)
                 return 0
             else:
                 log.error("卖出 [%s:%s] 失败 %s" % 
-                    (_sell_count,float(_buy_price * _gol.rate()),ret_info))
+                    (_sell_count,float(m_buy_price[0]) * _gol.rate()),ret_info)
                 return -1
         else:
             log.error("卖出失败（数量不足）： 交易[%s] 数量[%s] 价格[%s]" % 
-                (symble, str(_sell_count), float(_buy_price * _gol.rate())))
+                (symble, str(_sell_count), float(m_buy_price[0]) * _gol.rate()))
             return -1
 
     except Exception as e:
